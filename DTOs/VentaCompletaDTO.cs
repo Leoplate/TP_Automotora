@@ -19,5 +19,5 @@ public class VentaCompletaDTO
     public int ProductoId { get; set; }
     public string ProductoNombre { get; set; }
     public decimal ProductoPrecio { get; set; }
-    public int ProductoStock { get; set; }
+    //public int ProductoStock { get; set; }
 }

@@ -58,14 +58,21 @@ public class VentaController : ControllerBase
     public async Task<ActionResult<VentaDTO>> Create(VentaDTO ventaDTO)
     {
         // FluentValidation se hace automáticamente al verificar ModelState.IsValid.
+        
+        
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
-        Console.WriteLine("HOLA");
+
         var venta = _mapper.Map<Venta>(ventaDTO);
-        var newVenta = await _ventaService.AddVentaAsync(venta);
+        var (newVenta,error) = await _ventaService.AddVentaAsync(venta);
+       
+        
+        if (newVenta !=null) { 
         return CreatedAtAction(nameof(GetById), new { id = newVenta.Id }, _mapper.Map<VentaDTO>(newVenta));
+        }
+            return NotFound(error);
     }
 
     [HttpPut("{id}")]
@@ -98,7 +105,7 @@ public class VentaController : ControllerBase
     public async Task<IActionResult> Delete(int id)
     {
         var deleted = await _ventaService.DeleteVentaAsync(id);
-        if (!deleted) return NotFound();
-        return NoContent();
+        if (!deleted) return NotFound($"No se encontró la venta ID {id}.");
+        return NotFound($"Se eliminó la venta ID {id}.");
     }
 }

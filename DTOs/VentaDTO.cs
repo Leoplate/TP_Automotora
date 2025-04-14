@@ -14,13 +14,14 @@ public class VentaDTO
     /// <summary>
     /// Precio del producto.    
     /// </summary>
-    
+
     public int VehiculoId { get; set; }
 
 
-    public DateOnly Fecha { get; set; } 
+    public DateOnly Fecha { get; set; }
     /// <summary>
     /// Precio del producto.
     /// </summary>
     public int Total { get; set; }
+ 
 }

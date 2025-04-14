@@ -11,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
 builder.Services.AddValidatorsFromAssemblyContaining<ProductoDTOValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<ProductoValidator>();
 
 builder.Services.AddCors(options =>
 {

@@ -19,6 +19,7 @@ public class AutoMapperProfile : Profile
             .ForMember(dest => dest.ProductoId, opt => opt.MapFrom(src => src.VehiculoId))
             .ForMember(dest => dest.ProductoNombre, opt => opt.MapFrom(src => src.Vehiculo.Nombre))
             .ForMember(dest => dest.ProductoPrecio, opt => opt.MapFrom(src => src.Vehiculo.Precio))
+            //.ForMember(dest => dest.ProductoStock, opt => opt.MapFrom(src => src.Vehiculo.Stock))
             .ForMember(dest => dest.Fecha, opt => opt.MapFrom(src => src.Fecha))
             .ForMember(dest => dest.Total, opt => opt.MapFrom(src => src.Total));
     }
