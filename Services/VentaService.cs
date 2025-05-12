@@ -4,15 +4,17 @@ using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using technical_tests_backend_ssr.Models;
 using technical_tests_backend_ssr.Repositories;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Threading;
 
 public class VentaService
 {
     private readonly IVentaRepository _ventaRepository;
     private readonly IProductoRepository _productoRepository;
-    private readonly IClienteRepository _clienteRepository;  
-    static readonly SemaphoreSlim semaforoDelete = new SemaphoreSlim(1, 1);
-    static readonly SemaphoreSlim semaforoPut = new SemaphoreSlim(1, 1);
-    static readonly SemaphoreSlim semaforoPost = new SemaphoreSlim(1, 1);
+    private readonly IClienteRepository _clienteRepository;
+    //static readonly SemaphoreSlim semaforoDelete = new SemaphoreSlim(1, 1);
+    //static readonly SemaphoreSlim semaforoPut = new SemaphoreSlim(1, 1);
+    //static readonly SemaphoreSlim semaforoPost = new SemaphoreSlim(1, 1);
+    static Mutex ventaMutex = new Mutex(); 
     public VentaService(IVentaRepository ventaRepository, IProductoRepository productoRepository, IClienteRepository clienteRepository)
     {
         _ventaRepository = ventaRepository;
@@ -45,7 +47,8 @@ public class VentaService
 
         if (venta.Total > produ.Stock) return (null, "Supera el stock del producto");
 
-        await semaforoPost.WaitAsync();
+        //await semaforoPost.WaitAsync();
+        ventaMutex.WaitOne();
         try
         {
             if (produ.Stock > 0)
@@ -59,7 +62,8 @@ public class VentaService
         }
         finally
         {
-          semaforoPost.Release();
+            //semaforoPost.Release();
+            ventaMutex.ReleaseMutex();
         }
 
         
@@ -71,14 +75,16 @@ public class VentaService
 
     public async Task<Venta> UpdateClientAsync(Venta venta)
     {
-        await semaforoPut.WaitAsync();
+        //await semaforoPut.WaitAsync();
+        ventaMutex.WaitOne();
         try
         {
             await _ventaRepository.UpdateAsync(venta);
         }
         finally
         {
-            semaforoPut.Release();
+            //semaforoPut.Release();
+            ventaMutex.ReleaseMutex();
         }
 
         return venta;
@@ -91,9 +97,10 @@ public class VentaService
         
         if (existingVenta == null) return false;
 
-          
 
-        await semaforoDelete.WaitAsync();
+
+        //await semaforoDelete.WaitAsync();
+        ventaMutex.WaitOne();
         try
         {
                 var produ = await _productoRepository.GetByIdAsync(existingVenta.VehiculoId);
@@ -104,7 +111,8 @@ public class VentaService
         }
         finally
         {
-            semaforoDelete.Release();
+            //semaforoDelete.Release();
+            ventaMutex.ReleaseMutex();
         }
         
         return true;
