@@ -4,37 +4,37 @@ using Microsoft.EntityFrameworkCore;
 
 namespace technical_tests_backend_ssr.Repositories;
 
-public class VentaRepository : IVentaRepository
+public class PosventaRepository : IPosventaRepository
 {
     private readonly AppDbContext _context;
 
-    public VentaRepository(AppDbContext context)
+    public PosventaRepository(AppDbContext context)
     {
         _context = context;
     }
 
-    public async Task<IEnumerable<Venta>> GetAllAsync()
+    public async Task<IEnumerable<Posventa>> GetAllAsync()
     {
-        return await _context.Ventas
-            .Include(v => v.Cliente) 
-            .Include(v => v.Vehiculo) 
+        return await _context.Posventas
+            //.Include(v => v.Cliente) 
+            //.Include(v => v.Vehiculo) 
             .ToListAsync();
     }
 
-    public async Task<Venta?> GetByIdAsync(int id)
+    public async Task<Posventa?> GetByIdAsync(int id)
     {
-        return await _context.Ventas.FindAsync(id);
+        return await _context.Posventas.FindAsync(id);
     }
 
-    public async Task AddAsync(Venta venta)
+    public async Task AddAsync(Posventa venta)
     {
-        await _context.Ventas.AddAsync(venta);
+        await _context.Posventas.AddAsync(venta);
         await _context.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(Venta venta)
+    public async Task UpdateAsync(Posventa venta)
     {
-        var existingVenta = await _context.Ventas.AsNoTracking().FirstOrDefaultAsync(p => p.Id == venta.Id);
+        var existingVenta = await _context.Posventas.AsNoTracking().FirstOrDefaultAsync(p => p.Id == venta.Id);
 
         if (existingVenta == null)
         {
@@ -50,20 +50,20 @@ public class VentaRepository : IVentaRepository
 
     public async Task DeleteAsync(int id)
     {
-        var venta = await _context.Ventas.FindAsync(id);
+        var venta = await _context.Posventas.FindAsync(id);
         if (venta != null)
         {
-            _context.Ventas.Remove(venta);
+            _context.Posventas.Remove(venta);
             await _context.SaveChangesAsync();
         }
     }
 
-    public async Task  AddAsyncRamdom(Venta venta)
+
+    public async Task AddAsyncRamdom(Posventa venta)
     {
-         await _context.Ventas.AddAsync(venta);
+        await _context.Posventas.AddAsync(venta);
         //_context.ChangeTracker.AutoDetectChangesEnabled = false;
         await _context.SaveChangesAsync();
         //_context.ChangeTracker.AutoDetectChangesEnabled = true;
     }
-    
 }

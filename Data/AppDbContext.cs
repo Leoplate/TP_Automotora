@@ -11,9 +11,15 @@ namespace technical_tests_backend_ssr.Data
         public DbSet<Cliente> Clientes { get; set; }
         public DbSet<Venta> Ventas { get; set; }
 
+        public DbSet<Posventa> Posventas { get; set; }
+
+        public DbSet<Tipo> Tipo { get; set; }
+
+        public DbSet<Estado> Estado { get; set; }
+
         //protected override void OnModelCreating(ModelBuilder modelBuilder)
         //{
-            // Configuración de Cliente
+        // Configuración de Cliente
         //    modelBuilder.Entity<Cliente>(entity =>
         //    {
         //        entity.ToTable("Clientes");
@@ -24,7 +30,7 @@ namespace technical_tests_backend_ssr.Data
         //        entity.Property(c => c.Telefono).HasMaxLength(20);
         //    });
 
-            // Configuración de Producto
+        // Configuración de Producto
         //    modelBuilder.Entity<Producto>(entity =>
         //    {
         //        entity.ToTable("Productos");
@@ -34,19 +40,19 @@ namespace technical_tests_backend_ssr.Data
         //        entity.Property(p => p.Stock).IsRequired();
         //    });
 
-            // Configuración de Venta y relaciones
+        // Configuración de Venta y relaciones
         //    modelBuilder.Entity<Venta>(entity =>
         //    {
         //        entity.ToTable("Ventas"); // Nombre de la tabla en la base de datos
         //        entity.HasKey(v => v.Id); // Configuración de la clave primaria
 
-                // Relación con Cliente
+        // Relación con Cliente
         //        entity.HasOne(v => v.Cliente)
         //            .WithMany() // Cliente tiene muchas Ventas
         //            .HasForeignKey(v => v.ClienteId) // Clave foránea
         //            .OnDelete(DeleteBehavior.Cascade); // Eliminación en cascada opcional
 
-                // Relación con Producto (Vehículo)
+        // Relación con Producto (Vehículo)
         //        entity.HasOne(v => v.Vehiculo)
         //            .WithMany() // Producto tiene muchas Ventas
         //            .HasForeignKey(v => v.VehiculoId) // Clave foránea

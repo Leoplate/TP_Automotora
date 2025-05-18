@@ -54,9 +54,14 @@ builder.Services.AddOpenApi();
 builder.Services.AddScoped<IProductoRepository, ProductoRepository>();
 builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
 builder.Services.AddScoped<IVentaRepository, VentaRepository>();
+builder.Services.AddScoped<IPosventaRepository, PosventaRepository>();
+builder.Services.AddScoped<IEstadoRepository, EstadoRepository>();
+builder.Services.AddScoped<ITipoRepository, TipoRepository>();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<ClientService>();
 builder.Services.AddScoped<VentaService>();
+builder.Services.AddScoped<PosventaService>();
+
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 

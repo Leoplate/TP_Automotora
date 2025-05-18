@@ -6,10 +6,11 @@ using System.Threading;
 public class ClientService
 {
     private readonly IClienteRepository _clienteRepository;
-    //static readonly SemaphoreSlim semaforoClientDelete = new SemaphoreSlim(1, 1);
-    //static readonly SemaphoreSlim semaforoClientPut = new SemaphoreSlim(1, 1);
-    //static readonly SemaphoreSlim semaforoClientPost = new SemaphoreSlim(1, 1);
-    static Mutex mutexCliente = new Mutex();
+    static readonly SemaphoreSlim semaforoClientDelete = new SemaphoreSlim(1, 1);
+    static readonly SemaphoreSlim semaforoClientPut = new SemaphoreSlim(1, 1);
+    static readonly SemaphoreSlim semaforoClientPost = new SemaphoreSlim(1, 1);
+    //static Mutex mutexCliente = new Mutex();
+
 
     public ClientService(IClienteRepository clienteRepository)
     {
@@ -30,32 +31,32 @@ public class ClientService
     {
 
 
-        //await semaforoClientPost.WaitAsync();
-        mutexCliente.WaitOne();
+        await semaforoClientPost.WaitAsync();
+        //mutexCliente.WaitOne();
         try
         {
            await _clienteRepository.AddAsync(cliente);
         }
         finally
         {
-          //semaforoClientPost.Release();
-          mutexCliente.ReleaseMutex();
+          semaforoClientPost.Release();
+          //mutexCliente.ReleaseMutex();
         }
        return cliente;
     }
 
     public async Task<Cliente> UpdateClientAsync(Cliente cliente)
     {
-        //await semaforoClientPut.WaitAsync();
-        mutexCliente.WaitOne(); 
+        await semaforoClientPut.WaitAsync();
+        //mutexCliente.WaitOne(); 
         try
         {
             await _clienteRepository.UpdateAsync(cliente);
         }
         finally
         {
-            //semaforoClientPut.Release();
-            mutexCliente.ReleaseMutex();
+            semaforoClientPut.Release();
+            //mutexCliente.ReleaseMutex();
         }
         return cliente;
     }
@@ -66,16 +67,16 @@ public class ClientService
         if (existingClient == null) return false;
 
 
-        //await semaforoClientDelete.WaitAsync();
-        mutexCliente.WaitOne();
+        await semaforoClientDelete.WaitAsync();
+        //mutexCliente.WaitOne();
         try
         {
             await _clienteRepository.DeleteAsync(id);
         }
         finally
         {
-            //semaforoClientDelete.Release();
-            mutexCliente.ReleaseMutex();
+            semaforoClientDelete.Release();
+            //mutexCliente.ReleaseMutex();
         }
             return true;
     }

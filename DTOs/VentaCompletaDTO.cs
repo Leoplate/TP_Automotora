@@ -12,6 +12,8 @@ public class VentaCompletaDTO
     // Datos del cliente relacionado
     public int ClienteId { get; set; }
     public string ClienteNombre { get; set; }
+
+    public string ClienteApellido { get; set; }
     public string ClienteEmail { get; set; }
     public string ClienteTelefono { get; set; }
 

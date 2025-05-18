@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using technical_tests_backend_ssr.Models;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 
 
 /// <summary>
@@ -90,7 +93,7 @@ public class VentaController : ControllerBase
         }
 
         _mapper.Map(ventaDTO, venta);
-        await _ventaService.UpdateClientAsync(venta);
+        await _ventaService.UpdateVentaAsync(venta);
 
         var updatedVentaDTO = _mapper.Map<VentaDTO>(venta);
         return Ok(updatedVentaDTO); // Retornar el producto actualizado
@@ -108,4 +111,95 @@ public class VentaController : ControllerBase
         if (!deleted) return NotFound($"No se encontró la venta ID {id}.");
         return NotFound($"Se eliminó la venta ID {id}.");
     }
+
+    [HttpPost("random")]
+    public async Task  UpdateRandom()
+    {
+        //if (id != productoDTO.Id)
+        //{
+        //    return BadRequest("El ID del producto no coincide con el de la URL.");
+        //}
+
+
+
+
+         await _ventaService.AddPosventaAsyncRandom();
+
+
+    }
+
+
+    [HttpGet("vehiculo")]
+    public async Task<ActionResult<IEnumerable<TopVehiculoDTO>>> GetListVehiculo()
+    {
+        var ventas = await _ventaService.GetAllVentasAsync();
+
+
+
+
+        var vehiculos = _mapper.Map<IEnumerable<VentaCompletaDTO>>(ventas)
+       .GroupBy(v => v.ProductoNombre)
+       .Select(g => new
+       {
+           VehiculoId = g.Key,
+           TotalVentas = g.Count()
+       })
+       .OrderByDescending(e => e.TotalVentas)
+       .Take(5) 
+       .ToList();
+
+        
+
+        List<TopVehiculoDTO> top = new List<TopVehiculoDTO>();
+
+        foreach (var vehiculo in vehiculos)
+        {
+            var topVehiculo = new TopVehiculoDTO
+            {
+                Vehiculo = vehiculo.VehiculoId,
+                Total = vehiculo.TotalVentas,
+            };
+            top.Add(topVehiculo);
+        }
+
+        return Ok(top);
+    }
+
+    [HttpGet("cliente")]
+    public async Task<ActionResult<IEnumerable<TopClienteDTO>>> GetListCliente()
+    {
+        var ventas = await _ventaService.GetAllVentasAsync();
+
+        var clientes = _mapper.Map<IEnumerable<VentaCompletaDTO>>(ventas)
+    .GroupBy(v => new { v.ClienteId, v.ClienteNombre, v.ClienteApellido })
+    .Select(g => new
+    {
+        ClienteId = g.Key,
+        Nombre = g.Key.ClienteNombre + " " + g.Key.ClienteApellido,
+        TotalVentas = g.Count()
+    })
+    .OrderByDescending(e => e.TotalVentas)
+    .Take(5) 
+    .ToList();
+
+
+        
+
+        
+
+        List<TopClienteDTO> top = new List<TopClienteDTO>();
+
+        foreach (var cliente in clientes)
+        {
+            var topcliente = new TopClienteDTO
+            {
+                Nombre = cliente.Nombre,
+                Total = cliente.TotalVentas,
+            };
+            top.Add(topcliente);
+        }
+
+        return Ok(top);
+    }
+
 }

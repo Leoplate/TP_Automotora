@@ -8,4 +8,6 @@ public interface IVentaRepository
     Task AddAsync(Venta venta);
     Task UpdateAsync(Venta venta);
     Task DeleteAsync(int id);
+
+    Task AddAsyncRamdom(Venta venta);
 }
