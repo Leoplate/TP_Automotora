@@ -69,13 +69,13 @@ public class VentaController : ControllerBase
         }
 
         var venta = _mapper.Map<Venta>(ventaDTO);
-        var (newVenta,error) = await _ventaService.AddVentaAsync(venta);
-       
-        
+        //var (newVenta,error) = await _ventaService.AddVentaAsync(venta);
+       var newVenta = await _ventaService.AddVentaAsync(venta);
+
         if (newVenta !=null) { 
         return CreatedAtAction(nameof(GetById), new { id = newVenta.Id }, _mapper.Map<VentaDTO>(newVenta));
         }
-            return NotFound(error);
+            return NotFound("No hay stock del producto");
     }
 
     [HttpPut("{id}")]

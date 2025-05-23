@@ -40,7 +40,8 @@ public class VentaService
         return _ventaRepository.GetByIdAsync(id);
     }
 
-    public async Task<(Venta?,string?)> AddVentaAsync(Venta venta)
+    //public async Task<(Venta?,string?)> AddVentaAsync(Venta venta)
+    public async Task<Venta?> AddVentaAsync(Venta venta)
     {
 
 
@@ -48,38 +49,41 @@ public class VentaService
         var produ =  await _productoRepository.GetByIdAsync(venta.VehiculoId);
 
 
-        
-        
 
-        if (cliente == null) return (null, "No existe cliente");
-           
-        if (produ == null) return (null, "no existe producto");
 
-        if (venta.Total > produ.Stock) return (null, "Supera el stock del producto");
 
-        await semaforoPost.WaitAsync();
-        //ventaMutex.WaitOne();
-        try
+        //if (cliente == null) return (null, "No existe cliente");
+
+        //if (produ == null) return (null, "no existe producto");
+
+        //if (venta.Total > produ.Stock) return (null, "Supera el stock del producto");
+        if (venta.Total <= produ.Stock)
         {
-            if (produ.Stock > 0)
+            await semaforoPost.WaitAsync();
+            //ventaMutex.WaitOne();
+            try
             {
-                produ.Stock = produ.Stock - venta.Total;
-                await _productoRepository.UpdateAsync(produ);
-                await _ventaRepository.AddAsync(venta);
+                //if (produ.Stock > 0)
+                if (venta.Total > 0)
+                {
+                    produ.Stock = produ.Stock - venta.Total;
+                    await _productoRepository.UpdateAsync(produ);
+                    await _ventaRepository.AddAsync(venta);
 
-                return (venta,"Venta Realizada");
+                    //return (venta,"Venta Realizada");
+                    return (venta);
+                }
             }
-        }
-        finally
-        {
-            semaforoPost.Release();
-            //ventaMutex.ReleaseMutex();
+            finally
+            {
+                semaforoPost.Release();
+                //ventaMutex.ReleaseMutex();
+            }
+
         }
 
-        
-        
-
-        return (null, "No hay stock del producto");
+        return (null);
+        //return (null, "No hay stock del producto");
         
     }
 
