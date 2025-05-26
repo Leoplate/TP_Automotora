@@ -33,6 +33,10 @@ public class ProductService
         {
             await _productoRepository.AddAsync(producto);
         }
+        catch (Exception e)
+        {
+            throw new Exception(e.Message);
+        }
         finally
         {
             semaforoProductPost.Release();
@@ -48,6 +52,10 @@ public class ProductService
         try
         {
             await _productoRepository.UpdateAsync(producto);
+        }
+        catch (Exception e)
+        {
+            throw new Exception(e.Message);
         }
         finally
         {
@@ -67,6 +75,10 @@ public class ProductService
         try
         {
             await _productoRepository.DeleteAsync(id);
+        }
+        catch (Exception e)
+        {
+            throw new Exception(e.Message);
         }
         finally
         {

@@ -48,7 +48,11 @@ public class VentaController : ControllerBase
     {
         var venta = await _ventaService.GetVentaByIdAsync(id);
         if (venta == null) return NotFound();
+        
         return Ok(_mapper.Map<VentaCompletaDTO>(venta));
+        
+        
+
     }
 
 
@@ -75,7 +79,8 @@ public class VentaController : ControllerBase
         if (newVenta !=null) { 
         return CreatedAtAction(nameof(GetById), new { id = newVenta.Id }, _mapper.Map<VentaDTO>(newVenta));
         }
-            return NotFound("No hay stock del producto");
+            return BadRequest("No hay stock del producto");
+            
     }
 
     [HttpPut("{id}")]
@@ -109,7 +114,7 @@ public class VentaController : ControllerBase
     {
         var deleted = await _ventaService.DeleteVentaAsync(id);
         if (!deleted) return NotFound($"No se encontró la venta ID {id}.");
-        return NotFound($"Se eliminó la venta ID {id}.");
+        return Ok($"Se eliminó la venta ID {id}.");
     }
 
     [HttpPost("random")]

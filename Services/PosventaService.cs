@@ -37,24 +37,26 @@ public class PosventaService
         return _posventaRepository.GetByIdAsync(id);
     }
 
-    public async Task<(Posventa?,string?)> AddPosventaAsync(Posventa posventa)
+    public async Task<Posventa> AddPosventaAsync(Posventa posventa)
     {
 
 
-        var cliente = await _clienteRepository.GetByIdAsync(posventa.ClienteId);
+            
+
+        //var cliente = await _clienteRepository.GetByIdAsync(posventa.ClienteId);
         
 
 
         
         
 
-        if (cliente == null) return (null, "No existe cliente");
+        //if (cliente == null) return (null, "No existe cliente");
 
-        var estado = await _estadoRepository.GetByIdAsync(posventa.Estadoid);
-        if (estado == null) return (null, "no existe estado Posventa n° "+posventa.Estadoid);
+        //var estado = await _estadoRepository.GetByIdAsync(posventa.Estadoid);
+        //if (estado == null) return (null, "no existe estado Posventa n° "+posventa.Estadoid);
 
-        var tipo = await _tipoRepository.GetByIdAsync(posventa.Tipoid);
-        if (tipo == null) return (null, "no existe tipo Posventa n° "+posventa.Tipoid);
+        //var tipo = await _tipoRepository.GetByIdAsync(posventa.Tipoid);
+        //if (tipo == null) return (null, "no existe tipo Posventa n° "+posventa.Tipoid);
         //if (venta.Total > produ.Stock) return (null, "Supera el stock del producto");
 
         await semaforoPost.WaitAsync();
@@ -68,8 +70,12 @@ public class PosventaService
 
                 await _posventaRepository.AddAsync(posventa);
 
-                return (posventa,"Venta Realizada");
+                return (posventa);
             //}
+        }
+        catch (Exception e)
+        {
+            throw new Exception(e.Message);
         }
         finally
         {
@@ -80,7 +86,7 @@ public class PosventaService
         
         
 
-        return (null, "No hay posventa para ese cliente");
+        
         
     }
 
@@ -92,6 +98,10 @@ public class PosventaService
         try
         {
             await _posventaRepository.UpdateAsync(posventa);
+        }
+        catch (Exception e)
+        {
+            throw new Exception(e.Message);
         }
         finally
         {
@@ -120,6 +130,10 @@ public class PosventaService
                 //await _productoRepository.UpdateAsync(produ);
                 await _posventaRepository.DeleteAsync(id);
             
+        }
+        catch (Exception e)
+        {
+            throw new Exception(e.Message);
         }
         finally
         {

@@ -17,7 +17,7 @@ public class VentaService
     private readonly IMapper _mapper;
     static readonly SemaphoreSlim semaforoDelete = new SemaphoreSlim(1, 1);
     static readonly SemaphoreSlim semaforoPut = new SemaphoreSlim(1, 1);
-    static readonly SemaphoreSlim semaforoPost = new SemaphoreSlim(1, 1);
+    static readonly SemaphoreSlim semaforoPost = new SemaphoreSlim(2, 2);
     //static Mutex ventaMutex = new Mutex(); 
 
     
@@ -60,47 +60,86 @@ public class VentaService
         if (venta.Total <= produ.Stock)
         {
             await semaforoPost.WaitAsync();
+            //await semaforoPost.WaitAsync();
             //ventaMutex.WaitOne();
             try
             {
                 //if (produ.Stock > 0)
-                if (venta.Total > 0)
-                {
+                //if (venta.Total > 0)
+                //{
                     produ.Stock = produ.Stock - venta.Total;
                     await _productoRepository.UpdateAsync(produ);
                     await _ventaRepository.AddAsync(venta);
-
+                    //var tarea1 = _productoRepository.UpdateAsync(produ);
+                    //var tarea2 = _ventaRepository.AddAsync(venta);
                     //return (venta,"Venta Realizada");
+                    //await Task.WhenAll(tarea1, tarea2);
+
                     return (venta);
-                }
+                //}
+                //else
+                //{
+                //    throw new InvalidOperationException("La cantidad de venta debe ser mayor a 0.");
+                //}
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
             }
             finally
             {
                 semaforoPost.Release();
+                //semaforoPost.Release();
+
                 //ventaMutex.ReleaseMutex();
             }
 
+
+        }
+        else
+        {
+            throw new InvalidOperationException("No hay suficiente stock del producto");
         }
 
-        return (null);
-        //return (null, "No hay stock del producto");
+        
         
     }
 
     public async Task<Venta> UpdateVentaAsync(Venta venta)
     {
-        await semaforoPut.WaitAsync();
-        //ventaMutex.WaitOne();
-        try
-        {
-            await _ventaRepository.UpdateAsync(venta);
-        }
-        finally
-        {
-            semaforoPut.Release();
-            //ventaMutex.ReleaseMutex();
-        }
 
+
+        var produ = await _productoRepository.GetByIdAsync(venta.VehiculoId);
+
+        if (venta.Total <= produ.Stock && venta.Total >=0)
+        {
+
+
+            await semaforoPut.WaitAsync();
+            //ventaMutex.WaitOne();
+            try
+            {
+                produ.Stock = produ.Stock - venta.Total;
+                await _productoRepository.UpdateAsync(produ);
+                await _ventaRepository.UpdateAsync(venta);
+
+
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            finally
+            {
+                semaforoPut.Release();
+                //ventaMutex.ReleaseMutex();
+            }
+        }
+        else
+        {
+            //return null;
+            throw new InvalidOperationException("No hay suficiente stock del producto");
+        }
         return venta;
 
     }
@@ -108,28 +147,40 @@ public class VentaService
     public async Task<bool> DeleteVentaAsync(int id)
     {
         var existingVenta = await _ventaRepository.GetByIdAsync(id);
-        
-        if (existingVenta == null) return false;
 
+        if (existingVenta == null) return false;
+         
 
 
         await semaforoDelete.WaitAsync();
         //ventaMutex.WaitOne();
         try
         {
-                var produ = await _productoRepository.GetByIdAsync(existingVenta.VehiculoId);
-                produ.Stock = produ.Stock + existingVenta.Total;
-                await _productoRepository.UpdateAsync(produ);
-                await _ventaRepository.DeleteAsync(id);
             
+            
+            var produ = await _productoRepository.GetByIdAsync(existingVenta.VehiculoId);
+            
+            produ.Stock = produ.Stock + existingVenta.Total;
+            
+            //var tarea1 = Task.Run(() => _productoRepository.UpdateAsync(produ));
+            //var tarea2 = Task.Run(() => _ventaRepository.DeleteAsync(id));
+            await _productoRepository.UpdateAsync(produ);
+            await _ventaRepository.DeleteAsync(id);
+            //await Task.WhenAll(tarea1, tarea2);
+            return true;
+        }  
+        catch (Exception e)
+        {
+            throw new Exception(e.Message);
         }
+
         finally
         {
             semaforoDelete.Release();
             //ventaMutex.ReleaseMutex();
         }
         
-        return true;
+        
     }
 
 

@@ -61,6 +61,8 @@ builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<ClientService>();
 builder.Services.AddScoped<VentaService>();
 builder.Services.AddScoped<PosventaService>();
+builder.Services.AddScoped<TipoService>();
+builder.Services.AddScoped<EstadoService>();
 
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));

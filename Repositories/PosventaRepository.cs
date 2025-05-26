@@ -16,14 +16,19 @@ public class PosventaRepository : IPosventaRepository
     public async Task<IEnumerable<Posventa>> GetAllAsync()
     {
         return await _context.Posventas
-            //.Include(v => v.Cliente) 
-            //.Include(v => v.Vehiculo) 
-            .ToListAsync();
+                  .Include(v => v.Cliente)
+                  .Include(v => v.Tipo)
+                  .Include(v => v.Estado)
+                  .ToListAsync();
     }
 
     public async Task<Posventa?> GetByIdAsync(int id)
     {
-        return await _context.Posventas.FindAsync(id);
+        return await _context.Posventas
+                  .Include(v => v.Cliente)
+                  .Include(v => v.Tipo)
+                  .Include(v => v.Estado)
+                  .FirstOrDefaultAsync(v => v.Id == id);
     }
 
     public async Task AddAsync(Posventa venta)

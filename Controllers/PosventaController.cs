@@ -29,10 +29,10 @@ public class PosventaController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<PosventaDTO>>> GetAll()
+    public async Task<ActionResult<IEnumerable<PosventaCompletaDTO>>> GetAll()
     {
         var posventas = await _posventaService.GetAllPostventasAsync();
-        return Ok(_mapper.Map<IEnumerable<PosventaDTO>>(posventas));
+        return Ok(_mapper.Map<IEnumerable<PosventaCompletaDTO>>(posventas));
     }
 
     /// <summary>
@@ -41,11 +41,12 @@ public class PosventaController : ControllerBase
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpGet("{id}")]
-    public async Task<ActionResult<VentaCompletaDTO>> GetById(int id)
+    public async Task<ActionResult<PosventaCompletaDTO>> GetById(int id)
     {
         var posventa = await _posventaService.GetPosventaByIdAsync(id);
-        if (posventa == null) return NotFound();
-        return Ok(_mapper.Map<PosventaDTO>(posventa));
+        if (posventa == null) return NotFound($"No se encontró el ID {id}.");
+        return Ok(_mapper.Map<PosventaCompletaDTO>(posventa));
+        //return Ok(posventa);
     }
 
 
@@ -66,13 +67,13 @@ public class PosventaController : ControllerBase
         }
 
         var posventa = _mapper.Map<Posventa>(posventaDTO);
-        var (newVenta,error) = await _posventaService.AddPosventaAsync(posventa);
+        var newVenta = await _posventaService.AddPosventaAsync(posventa);
        
         
         if (newVenta !=null) { 
         return CreatedAtAction(nameof(GetById), new { id = newVenta.Id }, _mapper.Map<PosventaDTO>(newVenta));
         }
-            return NotFound(error);
+            return NotFound("Posventa no realizada");
     }
 
     [HttpPut("{id}")]
@@ -92,8 +93,8 @@ public class PosventaController : ControllerBase
         _mapper.Map(posventaDTO, posventa);
         await _posventaService.UpdatePosventaAsync(posventa);
 
-        var updatedVentaDTO = _mapper.Map<VentaDTO>(posventa);
-        return Ok(updatedVentaDTO); // Retornar el producto actualizado
+        var updatedPosventaDTO = _mapper.Map<PosventaDTO>(posventa);
+        return Ok(updatedPosventaDTO); // Retornar el producto actualizado
     }
 
     /// <summary>

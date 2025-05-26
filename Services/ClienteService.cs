@@ -36,6 +36,9 @@ public class ClientService
         try
         {
            await _clienteRepository.AddAsync(cliente);
+        }catch(Exception ex)
+        {
+            throw new HttpRequestException("Error al agregar el cliente", ex);
         }
         finally
         {
@@ -52,6 +55,10 @@ public class ClientService
         try
         {
             await _clienteRepository.UpdateAsync(cliente);
+        }
+        catch (Exception e)
+        {
+            throw new Exception(e.Message);
         }
         finally
         {
@@ -72,6 +79,10 @@ public class ClientService
         try
         {
             await _clienteRepository.DeleteAsync(id);
+        }
+        catch (Exception e)
+        {
+            throw new Exception(e.Message);
         }
         finally
         {
