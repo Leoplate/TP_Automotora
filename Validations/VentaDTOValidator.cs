@@ -9,9 +9,9 @@ public class VentaDTOValidator : AbstractValidator<VentaDTO>
             //.Length(3, 100).WithMessage("El nombre debe tener entre 3 y 100 caracteres.");
 
         RuleFor(p => p.VehiculoId)
-            .NotEmpty().WithMessage("El id de Vehiculo es obligatori");
+            .NotEmpty().WithMessage("El id de Vehiculo es obligatorio");
 
         RuleFor(p => p.Total)
-            .GreaterThanOrEqualTo(0).WithMessage("El stock no puede ser negativo.");
+            .GreaterThanOrEqualTo(0).WithMessage("Cantidad mayor que 0.");
     }
 }

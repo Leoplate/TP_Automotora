@@ -24,10 +24,12 @@ public class VentaRepository : IVentaRepository
     public async Task<Venta?> GetByIdAsync(int id)
     {
 
-        return await _context.Ventas
+        var data = await _context.Ventas
                   .Include(v => v.Cliente)
                   .Include(v => v.Vehiculo)
                   .FirstOrDefaultAsync(v => v.Id == id);
+
+        return data;
 
     } 
 

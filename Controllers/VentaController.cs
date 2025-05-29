@@ -4,6 +4,7 @@ using technical_tests_backend_ssr.Models;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
+using System.Diagnostics.Eventing.Reader;
 
 
 /// <summary>
@@ -69,7 +70,8 @@ public class VentaController : ControllerBase
         
         if (!ModelState.IsValid)
         {
-            return BadRequest(ModelState);
+            //return BadRequest(ModelState);
+            return BadRequest("Los datos ingresados no son conforme");
         }
 
         var venta = _mapper.Map<Venta>(ventaDTO);
@@ -79,7 +81,11 @@ public class VentaController : ControllerBase
         if (newVenta !=null) { 
         return CreatedAtAction(nameof(GetById), new { id = newVenta.Id }, _mapper.Map<VentaDTO>(newVenta));
         }
+        else
+        {
             return BadRequest("No hay stock del producto");
+        }
+            
             
     }
 
@@ -91,17 +97,38 @@ public class VentaController : ControllerBase
         //    return BadRequest("El ID del producto no coincide con el de la URL.");
         //}
 
-        var venta = await _ventaService.GetVentaByIdAsync(id);
-        if (venta == null)
+        if (!ModelState.IsValid)
         {
-            return NotFound($"No se encontró el cliente con ID {id}.");
+            //return BadRequest(ModelState);
+            return BadRequest("Los datos ingresados no son conforme");
         }
 
-        _mapper.Map(ventaDTO, venta);
-        await _ventaService.UpdateVentaAsync(venta);
 
-        var updatedVentaDTO = _mapper.Map<VentaDTO>(venta);
-        return Ok(updatedVentaDTO); // Retornar el producto actualizado
+        var venta = await _ventaService.GetVentaByIdAsync(id);
+        
+
+
+        if (venta == null)
+        {
+            return NotFound($"No se encontró la venta con ID {id}.");
+        }
+         var anterior = venta.Total;
+        
+        _mapper.Map(ventaDTO, venta);
+        
+        var result = await _ventaService.UpdateVentaAsync(venta,anterior);
+        if (result!=null)
+        {
+            var updatedVentaDTO = _mapper.Map<VentaDTO>(venta);
+            return Ok(updatedVentaDTO); // Retornar el producto actualizado
+        }
+        else
+        {
+            return BadRequest("No hay stock del producto");
+            
+        }
+
+        
     }
 
     /// <summary>

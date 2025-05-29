@@ -73,7 +73,7 @@ public class PosventaController : ControllerBase
         if (newVenta !=null) { 
         return CreatedAtAction(nameof(GetById), new { id = newVenta.Id }, _mapper.Map<PosventaDTO>(newVenta));
         }
-            return NotFound("Posventa no realizada");
+            return NotFound($"No se encontró el cliente con ID {posventa.Id}.");
     }
 
     [HttpPut("{id}")]

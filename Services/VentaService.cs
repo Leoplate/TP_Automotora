@@ -7,6 +7,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Threading.Tasks;
 using AutoMapper;
 using System.Formats.Tar;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 
 public class VentaService
@@ -98,31 +99,50 @@ public class VentaService
         }
         else
         {
-            throw new InvalidOperationException("No hay suficiente stock del producto");
+            return null;
         }
 
         
         
     }
 
-    public async Task<Venta> UpdateVentaAsync(Venta venta)
+    public async Task<Venta?> UpdateVentaAsync(Venta venta, int anterior)
     {
 
+        var final = 0;
+        var produ =  await _productoRepository.GetByIdAsync(venta.VehiculoId);
+        //var actual =  await _ventaRepository.GetByIdAsync(venta.Id);
 
-        var produ = await _productoRepository.GetByIdAsync(venta.VehiculoId);
-
-        if (venta.Total <= produ.Stock && venta.Total >=0)
+        //if(actual == null) { return null; }
+        
+        if(venta.Total <= anterior)
         {
+            final = venta.Total - anterior;
+        }
+        else
+        {
+            final = venta.Total - anterior;
+        }
+
+
+
+        if (final <= produ.Stock)
+        {
+
+
+
 
 
             await semaforoPut.WaitAsync();
             //ventaMutex.WaitOne();
             try
             {
-                produ.Stock = produ.Stock - venta.Total;
+
+                produ.Stock = produ.Stock - final;
                 await _productoRepository.UpdateAsync(produ);
                 await _ventaRepository.UpdateAsync(venta);
 
+                return venta;
 
             }
             catch (Exception e)
@@ -133,14 +153,15 @@ public class VentaService
             {
                 semaforoPut.Release();
                 //ventaMutex.ReleaseMutex();
+
             }
         }
         else
         {
-            //return null;
-            throw new InvalidOperationException("No hay suficiente stock del producto");
+            return null;
+
         }
-        return venta;
+        
 
     }
 

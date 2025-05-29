@@ -12,6 +12,8 @@ builder.Services.AddControllers();
 builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
 builder.Services.AddValidatorsFromAssemblyContaining<ProductoDTOValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<ProductoValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<ClienteValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<ClienteDTOValidator>();
 
 builder.Services.AddCors(options =>
 {

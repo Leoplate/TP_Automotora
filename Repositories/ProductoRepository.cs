@@ -33,15 +33,17 @@ public class ProductoRepository : IProductoRepository
     {
         var existingProducto = await _context.Productos.AsNoTracking().FirstOrDefaultAsync(p => p.Id == producto.Id);
 
-        if (existingProducto == null)
-        {
-            throw new KeyNotFoundException("El producto no existe.");
-        }
+        //if (existingProducto == null)
+        //{
+        //    return null;
+        //}
 
         // Attach the updated entity and set its state to Modified
         _context.Attach(producto);
         _context.Entry(producto).State = EntityState.Modified;
         await _context.SaveChangesAsync();
+
+        //return existingProducto;
     }
 
 
