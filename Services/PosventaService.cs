@@ -145,7 +145,7 @@ public class PosventaService
     }
 
 
-
+    //Generación de Posventas aleatorias
     public async Task AddPosventaAsyncRandom()
     {
         Random random = new Random();
@@ -174,6 +174,7 @@ public class PosventaService
     }
 
 
+    
 
 
 

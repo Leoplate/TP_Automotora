@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 using technical_tests_backend_ssr.Models;
 
 
@@ -100,5 +101,17 @@ public class ProductoController : ControllerBase
         var deleted = await _productService.DeleteProductAsync(id);
         if (!deleted) return NotFound();
         return NoContent();
+    }
+
+
+    [HttpPost("Stock")]
+    public async Task<IActionResult> SendMessage(VentaDTO venta)
+    {
+        var tarea = Task.Run(() =>  _productService.GetProductByIdAsync(venta.VehiculoId));
+
+        var resultado = await tarea;
+
+
+        return Ok(resultado.Stock);
     }
 }

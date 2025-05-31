@@ -101,4 +101,8 @@ public class ClienteController : ControllerBase
         if (!deleted) return NotFound();
         return NoContent();
     }
+
+
+    
+
 }

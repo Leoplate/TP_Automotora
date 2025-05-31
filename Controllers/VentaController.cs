@@ -166,35 +166,36 @@ public class VentaController : ControllerBase
     {
         var ventas = await _ventaService.GetAllVentasAsync();
 
+       
+        var LTop = await _ventaService.GenerarListadoVehiculos(_mapper.Map<IEnumerable<VentaCompletaDTO>>(ventas));
 
-
-
-        var vehiculos = _mapper.Map<IEnumerable<VentaCompletaDTO>>(ventas)
-       .GroupBy(v => v.ProductoNombre)
-       .Select(g => new
-       {
-           VehiculoId = g.Key,
-           TotalVentas = g.Count()
-       })
-       .OrderByDescending(e => e.TotalVentas)
-       .Take(5) 
-       .ToList();
+       // var vehiculos = _mapper.Map<IEnumerable<VentaCompletaDTO>>(ventas)
+       //.AsParallel()
+       //.GroupBy(v => v.ProductoNombre)
+       //.Select(g => new
+       //{
+       //    VehiculoId = g.Key,
+       //    TotalVentas = g.Count()
+       //})
+       //.OrderByDescending(e => e.TotalVentas)
+       //.Take(5) 
+       //.ToList();
 
         
 
-        List<TopVehiculoDTO> top = new List<TopVehiculoDTO>();
+       // List<TopVehiculoDTO> top = new List<TopVehiculoDTO>();
 
-        foreach (var vehiculo in vehiculos)
-        {
-            var topVehiculo = new TopVehiculoDTO
-            {
-                Vehiculo = vehiculo.VehiculoId,
-                Total = vehiculo.TotalVentas,
-            };
-            top.Add(topVehiculo);
-        }
+       // foreach (var vehiculo in vehiculos)
+       // {
+       //     var topVehiculo = new TopVehiculoDTO
+       //     {
+       //         Vehiculo = vehiculo.VehiculoId,
+       //         Total = vehiculo.TotalVentas,
+       //     };
+       //     top.Add(topVehiculo);
+       // }
 
-        return Ok(top);
+        return Ok(LTop);
     }
 
     [HttpGet("cliente")]
@@ -202,36 +203,44 @@ public class VentaController : ControllerBase
     {
         var ventas = await _ventaService.GetAllVentasAsync();
 
-        var clientes = _mapper.Map<IEnumerable<VentaCompletaDTO>>(ventas)
-    .GroupBy(v => new { v.ClienteId, v.ClienteNombre, v.ClienteApellido })
-    .Select(g => new
-    {
-        ClienteId = g.Key,
-        Nombre = g.Key.ClienteNombre + " " + g.Key.ClienteApellido,
-        TotalVentas = g.Count()
-    })
-    .OrderByDescending(e => e.TotalVentas)
-    .Take(5) 
-    .ToList();
+
+        var LTop = await _ventaService.GenerarListadoClientes(_mapper.Map<IEnumerable<VentaCompletaDTO>>(ventas));
+
+
+        //var clientes = _mapper.Map<IEnumerable<VentaCompletaDTO>>(ventas)
+    //.AsParallel()
+    //.GroupBy(v => new { v.ClienteId, v.ClienteNombre, v.ClienteApellido })
+    //.Select(g => new
+    //{
+    //    ClienteId = g.Key,
+    //    Nombre = g.Key.ClienteNombre + " " + g.Key.ClienteApellido,
+    //    TotalVentas = g.Count()
+    //})
+    //.OrderByDescending(e => e.TotalVentas)
+    //.Take(5) 
+    //.ToList();
 
 
         
 
         
 
-        List<TopClienteDTO> top = new List<TopClienteDTO>();
+        //List<TopClienteDTO> top = new List<TopClienteDTO>();
 
-        foreach (var cliente in clientes)
-        {
-            var topcliente = new TopClienteDTO
-            {
-                Nombre = cliente.Nombre,
-                Total = cliente.TotalVentas,
-            };
-            top.Add(topcliente);
-        }
+        //foreach (var cliente in clientes)
+        //{
+        //    var topcliente = new TopClienteDTO
+        //    {
+        //        Nombre = cliente.Nombre,
+        //        Total = cliente.TotalVentas,
+        //    };
+        //    top.Add(topcliente);
+        //}
 
-        return Ok(top);
+        return Ok(LTop);
     }
+
+
+    
 
 }
