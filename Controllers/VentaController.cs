@@ -241,6 +241,20 @@ public class VentaController : ControllerBase
     }
 
 
-    
+
+    [HttpGet("anual")]
+    public async Task<ActionResult<IEnumerable<TopClienteDTO>>> GetListYear()
+    {
+        var ventas = await _ventaService.GetAllVentasAsync();
+
+
+        var LTop = await _ventaService.GenerarListadoVentasAnuales(_mapper.Map<IEnumerable<VentaCompletaDTO>>(ventas));
+
+
+       
+
+        return Ok(LTop);
+    }
+
 
 }

@@ -282,15 +282,90 @@ public class VentaService
         return top;
     }
 
+
+
+    public async Task<List<TopAnioDTO>> GenerarListadoVentasAnuales(IEnumerable<VentaCompletaDTO> ventas)
+    {
+
+
+
+        var anios = _mapper.Map<IEnumerable<VentaCompletaDTO>>(ventas)
+        .AsParallel()
+        .GroupBy(v => v.Fecha.Year)
+        .Select(g => new
+        {
+            Year = g.Key,
+            
+        })
+        .Take(5)
+        .ToList();
+
+
+        var vehiculos = _mapper.Map<IEnumerable<VentaCompletaDTO>>(ventas);
+
+        var tasks = anios.Select(d => Task.Run(() =>  Calculo(d.Year,vehiculos)));
+
+        
         
 
+        
 
-    
+        
+
+        
+
+        var resultados = await Task.WhenAll(tasks);
+
+        // Retornar los resultados combinados en una lista plana
+        return resultados.SelectMany(r => r).Cast<TopAnioDTO>().ToList();
 
 
-//Generación de ventas aleatorias
 
-public async Task AddPosventaAsyncRandom()
+
+        static async Task<List<TopAnioDTO>>  Calculo(int anio, IEnumerable<VentaCompletaDTO> listado)
+        {
+         
+            
+         var datos = listado
+         .AsParallel()
+         .Where(v => v.Fecha.Year == anio)
+        .GroupBy(v => v.Fecha.Year )
+        .Select(g => new
+        {
+            Year = g.Key,
+            TotalVentas = g.Count()
+        })
+        .OrderByDescending(e => e.TotalVentas)
+        //.Take(5)
+        .ToList();
+
+
+
+
+            List<TopAnioDTO> top = new List<TopAnioDTO>();
+
+            foreach (var dato in datos)
+            {
+                var topAnio = new TopAnioDTO
+                {
+                    Anio = dato.Year,
+                    Total = dato.TotalVentas,
+                };
+                top.Add(topAnio);
+            }
+
+
+            return await Task.FromResult(top);
+        }
+
+
+    }
+
+
+
+    //Generación de ventas aleatorias
+
+    public async Task AddPosventaAsyncRandom()
     {
         Random random = new Random();
 
