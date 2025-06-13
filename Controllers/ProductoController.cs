@@ -114,4 +114,14 @@ public class ProductoController : ControllerBase
 
         return Ok(resultado.Stock);
     }
+
+    [HttpGet("Test")]
+    public async Task GetTest()
+    {
+        var products = await _productService.GetAllProductsAsync();
+
+        _productService.TestProductos(products);  
+        //return Ok(_mapper.Map<IEnumerable<ProductoDTO>>(products));
+    }
+
 }

@@ -333,7 +333,7 @@ public class VentaService
         .Select(g => new
         {
             Year = g.Key,
-            TotalVentas = g.Count()
+            TotalVentas = g.Sum(v => v.Total)
         })
         .OrderByDescending(e => e.TotalVentas)
         //.Take(5)
